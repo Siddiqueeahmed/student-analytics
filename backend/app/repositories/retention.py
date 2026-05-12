@@ -1,4 +1,4 @@
-"""DB access for retention aggregations."""
+"""DB access — reads from mart_retention_by_classification (materialized KPI)."""
 from __future__ import annotations
 
 from app.core.database import cursor
@@ -27,11 +27,12 @@ class RetentionRepository:
             params.extend(classifications)
 
         where = f"WHERE {' AND '.join(filters)}" if filters else ""
+        # Compute weighted rate from pre-summed counts
         query = f"""
             SELECT
                 classification,
-                AVG(CAST(retained_next_term AS INTEGER)) AS retention_rate
-            FROM students
+                CAST(SUM(retained_count) AS DOUBLE) / SUM(student_count) AS retention_rate
+            FROM mart_retention_by_classification
             {where}
             GROUP BY classification
         """

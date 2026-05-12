@@ -1,10 +1,7 @@
-"""DB access for enrollment aggregations."""
+"""DB access — reads from mart_enrollment_by_college (materialized KPI)."""
 from __future__ import annotations
 
 from app.core.database import cursor
-
-# Filter columns come from validated query-param enums, never raw user strings.
-# The WHERE clause *structure* uses string building; VALUES use ? placeholders.
 
 
 class EnrollmentRepository:
@@ -26,9 +23,10 @@ class EnrollmentRepository:
             params.extend(classifications)
 
         where = f"WHERE {' AND '.join(filters)}" if filters else ""
+        # SUM over the pre-aggregated mart — no full-table scan
         query = f"""
-            SELECT college, COUNT(*) AS count
-            FROM students
+            SELECT college, SUM(count) AS count
+            FROM mart_enrollment_by_college
             {where}
             GROUP BY college
             ORDER BY college
