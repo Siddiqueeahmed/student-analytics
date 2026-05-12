@@ -100,7 +100,4 @@ student-analytics/
 - **Polars over pandas** — zero-copy columnar ops, 2–10× faster for aggregation at this scale; see `docs/adr/0002-polars-over-pandas.md` (Phase 3).
 - **DuckDB over Postgres** (Phase 2+) — embedded OLAP engine, no infra to manage for a portfolio project; see `docs/adr/0001-duckdb-over-postgres.md`.
 - **TanStack Query over Redux** (Phase 2+) — server-state belongs in a cache, not a global store; see `docs/adr/0004-no-redux.md`.
-
-## License
-
-MIT © 2026 Siddique Ahmed
+- 
