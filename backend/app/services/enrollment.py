@@ -1,6 +1,7 @@
-"""Business logic for enrollment aggregations with 5-min LRU cache."""
+"""Business logic for enrollment aggregations with 5-min TTL cache."""
 from __future__ import annotations
 
+import asyncio
 import threading
 
 from cachetools import TTLCache
@@ -15,7 +16,7 @@ _cache: TTLCache[tuple[str | None, str], list[CollegeEnrollmentResponse]] = TTLC
 _cache_lock = threading.Lock()
 
 
-def by_college(
+async def by_college(
     term: str | None = None,
     classifications: list[str] | None = None,
 ) -> list[CollegeEnrollmentResponse]:
@@ -26,7 +27,7 @@ def by_college(
     if cached is not None:
         return cached
 
-    rows = _repo.by_college(term=term, classifications=classifications)
+    rows = await asyncio.to_thread(_repo.by_college, term=term, classifications=classifications)
     result = [CollegeEnrollmentResponse.model_validate(r) for r in rows]
 
     with _cache_lock:

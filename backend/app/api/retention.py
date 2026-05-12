@@ -1,4 +1,4 @@
-"""Retention endpoint — thin handler, delegates to service."""
+"""Retention endpoint — thin async handler, delegates to service."""
 from __future__ import annotations
 
 from typing import Annotated
@@ -14,7 +14,7 @@ _TERM_RE = r"^(Fall|Spring)\d{4}$"
 
 
 @router.get("/retention/by-classification", response_model=list[ClassificationRetentionResponse])
-def retention_by_classification(
+async def retention_by_classification(
     term: Annotated[
         str | None,
         Query(pattern=_TERM_RE, description="Academic term, e.g. Fall2024"),
@@ -24,4 +24,4 @@ def retention_by_classification(
         Query(description="Filter by one or more classifications"),
     ] = None,
 ) -> list[ClassificationRetentionResponse]:
-    return svc.by_classification(term=term, classifications=classification)
+    return await svc.by_classification(term=term, classifications=classification)

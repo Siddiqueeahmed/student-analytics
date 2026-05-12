@@ -1,6 +1,7 @@
-"""Business logic for retention aggregations with 5-min LRU cache."""
+"""Business logic for retention aggregations with 5-min TTL cache."""
 from __future__ import annotations
 
+import asyncio
 import threading
 
 from cachetools import TTLCache
@@ -15,7 +16,7 @@ _cache: TTLCache[tuple[str | None, str], list[ClassificationRetentionResponse]] 
 _cache_lock = threading.Lock()
 
 
-def by_classification(
+async def by_classification(
     term: str | None = None,
     classifications: list[str] | None = None,
 ) -> list[ClassificationRetentionResponse]:
@@ -26,7 +27,9 @@ def by_classification(
     if cached is not None:
         return cached
 
-    rows = _repo.by_classification(term=term, classifications=classifications)
+    rows = await asyncio.to_thread(
+        _repo.by_classification, term=term, classifications=classifications
+    )
     result = [ClassificationRetentionResponse.model_validate(r) for r in rows]
 
     with _cache_lock:

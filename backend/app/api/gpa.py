@@ -1,4 +1,4 @@
-"""GPA distribution endpoint — thin handler, delegates to service."""
+"""GPA distribution endpoint — thin async handler, delegates to service."""
 from __future__ import annotations
 
 from typing import Annotated
@@ -14,7 +14,7 @@ _TERM_RE = r"^(Fall|Spring)\d{4}$"
 
 
 @router.get("/gpa/distribution", response_model=list[GpaBucketResponse])
-def gpa_distribution(
+async def gpa_distribution(
     term: Annotated[
         str | None,
         Query(pattern=_TERM_RE, description="Academic term, e.g. Fall2024"),
@@ -24,4 +24,4 @@ def gpa_distribution(
         Query(description="Filter by one or more classifications"),
     ] = None,
 ) -> list[GpaBucketResponse]:
-    return svc.distribution(term=term, classifications=classification)
+    return await svc.distribution(term=term, classifications=classification)
