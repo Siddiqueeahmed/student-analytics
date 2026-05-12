@@ -1,0 +1,59 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+*.so
+.venv/
+venv/
+ENV/
+env/
+pip-wheel-metadata/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+htmlcov/
+.coverage
+coverage.xml
+*.cover
+
+# DuckDB (phase 2+)
+*.duckdb
+*.duckdb.wal
+
+# Node
+node_modules/
+dist/
+.DS_Store
+*.local
+
+# Vite
+frontend/dist/
+frontend/.vite/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Docker
+*.log
+
+# Data (generated files — kept out of history; only generator is committed)
+data/students.csv
+
+# OS
+Thumbs.db
+.DS_Store
