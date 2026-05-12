@@ -1,0 +1,46 @@
+.shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.header {
+  background: #0f172a;
+  border-bottom: 1px solid #1e293b;
+  padding: 20px 32px;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.logo {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  letter-spacing: -0.5px;
+}
+
+.tag {
+  font-size: 0.75rem;
+  color: #6366f1;
+  background: #1e1b4b;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-weight: 500;
+}
+
+.main {
+  flex: 1;
+  padding: 32px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+  gap: 24px;
+  align-items: start;
+}
+
+.footer {
+  padding: 16px 32px;
+  border-top: 1px solid #1e293b;
+  color: #475569;
+  font-size: 0.8rem;
+}

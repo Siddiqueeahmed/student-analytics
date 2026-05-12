@@ -1,50 +1,40 @@
-import { useEffect, useState } from 'react'
 import {
-  BarChart,
   Bar,
+  BarChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
 } from 'recharts'
+import { useEnrollmentByCollege } from '../api/hooks'
+import type { Filters } from '../api/types'
 import styles from './Chart.module.css'
+import Skeleton from './Skeleton'
 
-interface CollegeEnrollment {
-  college: string
-  count: number
+interface Props {
+  filters: Filters
 }
 
-type State =
-  | { status: 'loading' }
-  | { status: 'error'; message: string }
-  | { status: 'ok'; data: CollegeEnrollment[] }
+export default function EnrollmentChart({ filters }: Props): React.ReactElement {
+  const { data, isPending, isError, error } = useEnrollmentByCollege(filters)
 
-export default function EnrollmentChart(): React.ReactElement {
-  const [state, setState] = useState<State>({ status: 'loading' })
-
-  useEffect(() => {
-    fetch('/api/enrollment/by-college')
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`)
-        return res.json() as Promise<CollegeEnrollment[]>
-      })
-      .then((data) => setState({ status: 'ok', data }))
-      .catch((err: unknown) =>
-        setState({ status: 'error', message: String(err) }),
-      )
-  }, [])
-
-  if (state.status === 'loading') return <p className={styles.info}>Loading…</p>
-  if (state.status === 'error')
-    return <p className={styles.error}>Error: {state.message}</p>
+  if (isPending) return <Skeleton />
+  if (isError) return <p className={styles.error}>Error: {error.message}</p>
+  if (data.length === 0)
+    return (
+      <div className={styles.card}>
+        <h2 className={styles.title}>Enrollment by College</h2>
+        <p className={styles.empty}>No data for the selected filters.</p>
+      </div>
+    )
 
   return (
     <div className={styles.card}>
       <h2 className={styles.title}>Enrollment by College</h2>
       <p className={styles.subtitle}>Total enrolled students per academic college</p>
       <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={state.data} margin={{ top: 8, right: 16, left: 8, bottom: 72 }}>
+        <BarChart data={data} margin={{ top: 8, right: 16, left: 8, bottom: 72 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
           <XAxis
             dataKey="college"

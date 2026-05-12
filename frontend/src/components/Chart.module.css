@@ -3,6 +3,7 @@
   border: 1px solid var(--color-border);
   border-radius: 12px;
   padding: 24px;
+  min-height: 380px;
 }
 
 .title {
@@ -18,14 +19,60 @@
   margin-bottom: 20px;
 }
 
-.info {
+.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 280px;
   color: var(--color-muted);
-  padding: 40px;
-  text-align: center;
+  font-size: 0.9rem;
 }
 
 .error {
   color: #f87171;
   padding: 40px;
   text-align: center;
+}
+
+/* Skeleton shimmer — translateX triggers Composite only (no Paint) */
+@keyframes shimmer {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(100%); }
+}
+
+.skeletonTitle,
+.skeletonSubtitle,
+.skeletonChart {
+  position: relative;
+  overflow: hidden;
+  background: #1e293b;
+  border-radius: 4px;
+}
+
+.skeletonTitle::after,
+.skeletonSubtitle::after,
+.skeletonChart::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, #2d3f55 50%, transparent 100%);
+  animation: shimmer 1.4s infinite;
+  will-change: transform;
+}
+
+.skeletonTitle {
+  height: 20px;
+  width: 60%;
+  margin-bottom: 10px;
+}
+
+.skeletonSubtitle {
+  height: 14px;
+  width: 40%;
+  margin-bottom: 24px;
+}
+
+.skeletonChart {
+  height: 280px;
+  border-radius: 6px;
 }

@@ -1,67 +1,38 @@
+import { useState } from 'react'
+import type { Filters } from '../api/types'
+import { ErrorBoundary } from '../components/ErrorBoundary'
 import EnrollmentChart from '../components/EnrollmentChart'
-import RetentionChart from '../components/RetentionChart'
+import FilterBar from '../components/FilterBar'
 import GpaChart from '../components/GpaChart'
-
-const styles: Record<string, React.CSSProperties> = {
-  shell: {
-    display: 'flex',
-    flexDirection: 'column',
-    minHeight: '100vh',
-  },
-  header: {
-    background: '#0f172a',
-    borderBottom: '1px solid #1e293b',
-    padding: '20px 32px',
-    display: 'flex',
-    alignItems: 'baseline',
-    gap: 12,
-  },
-  logo: {
-    fontSize: '1.25rem',
-    fontWeight: 700,
-    color: '#f1f5f9',
-    letterSpacing: '-0.5px',
-  },
-  tag: {
-    fontSize: '0.75rem',
-    color: '#6366f1',
-    background: '#1e1b4b',
-    padding: '2px 8px',
-    borderRadius: 99,
-    fontWeight: 500,
-  },
-  main: {
-    flex: 1,
-    padding: '32px',
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(480px, 1fr))',
-    gap: '24px',
-    alignItems: 'start',
-  },
-  footer: {
-    padding: '16px 32px',
-    borderTop: '1px solid #1e293b',
-    color: '#475569',
-    fontSize: '0.8rem',
-  },
-}
+import RetentionChart from '../components/RetentionChart'
+import styles from './Dashboard.module.css'
 
 export default function Dashboard(): React.ReactElement {
+  const [filters, setFilters] = useState<Filters>({})
+
   return (
-    <div style={styles.shell}>
-      <header style={styles.header}>
-        <span style={styles.logo}>Student Analytics</span>
-        <span style={styles.tag}>Phase 1 MVP</span>
+    <div className={styles.shell}>
+      <header className={styles.header}>
+        <span className={styles.logo}>Student Analytics</span>
+        <span className={styles.tag}>Phase 2</span>
       </header>
 
-      <main style={styles.main}>
-        <EnrollmentChart />
-        <RetentionChart />
-        <GpaChart />
+      <FilterBar filters={filters} onChange={setFilters} />
+
+      <main className={styles.main}>
+        <ErrorBoundary>
+          <EnrollmentChart filters={filters} />
+        </ErrorBoundary>
+        <ErrorBoundary>
+          <RetentionChart filters={filters} />
+        </ErrorBoundary>
+        <ErrorBoundary>
+          <GpaChart filters={filters} />
+        </ErrorBoundary>
       </main>
 
-      <footer style={styles.footer}>
-        5,000 synthetic student records · Polars · FastAPI · Recharts
+      <footer className={styles.footer}>
+        5,000 synthetic student records · DuckDB · Polars · FastAPI · TanStack Query · Recharts
       </footer>
     </div>
   )
