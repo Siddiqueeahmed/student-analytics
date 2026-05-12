@@ -1,42 +1,40 @@
-"""FastAPI application entry point."""
+"""FastAPI application entry point — Phase 2: DuckDB-backed."""
 from __future__ import annotations
 
-import os
 from contextlib import asynccontextmanager
-from pathlib import Path
 from typing import AsyncGenerator
 
-import polars as pl
-from dotenv import load_dotenv
+import structlog
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app import state
 from app.api import enrollment, gpa, retention
+from app.core import database
+from app.core.config import settings
+from app.core.logging import configure_logging
+from app.middleware.request_id import RequestIdMiddleware
 
-load_dotenv()
-
-_DATA_PATH = Path(
-    os.getenv(
-        "DATA_PATH",
-        str(Path(__file__).parents[2] / "data" / "students.csv"),
-    )
-)
+configure_logging()
+logger: structlog.stdlib.BoundLogger = structlog.get_logger(__name__)
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncGenerator[None, None]:
-    state.set_df(pl.read_csv(_DATA_PATH))
+    logger.info("startup", db_path=str(settings.db_path))
+    database.init(str(settings.db_path))
     yield
+    database.close()
+    logger.info("shutdown")
 
 
 app = FastAPI(
     title="Student Analytics API",
-    version="0.1.0",
+    version="0.2.0",
     description="Enrollment, retention, and GPA analytics for higher-ed data.",
     lifespan=lifespan,
 )
 
+app.add_middleware(RequestIdMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],

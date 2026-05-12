@@ -1,31 +1,27 @@
-"""Retention aggregation endpoint."""
+"""Retention endpoint — thin handler, delegates to service."""
 from __future__ import annotations
 
-import polars as pl
-from fastapi import APIRouter
+from typing import Annotated
 
-from app import state
+from fastapi import APIRouter, Query
+
+from app.models.retention import ClassificationRetentionResponse
+from app.services import retention as svc
 
 router = APIRouter(tags=["retention"])
 
-_CLASSIFICATION_ORDER = ["Freshman", "Sophomore", "Junior", "Senior"]
+_TERM_RE = r"^(Fall|Spring)\d{4}$"
 
 
-@router.get("/retention/by-classification")
-def retention_by_classification() -> list[dict[str, object]]:
-    result = (
-        state.get_df()
-        .group_by("classification")
-        .agg(
-            pl.col("retained_next_term").mean().alias("retention_rate")
-        )
-        .with_columns(
-            pl.col("retention_rate").round(4)
-        )
-    )
-
-    # Sort by natural academic progression
-    order_map = {cls: i for i, cls in enumerate(_CLASSIFICATION_ORDER)}
-    rows = result.to_dicts()
-    rows.sort(key=lambda r: order_map.get(str(r["classification"]), 99))
-    return rows  # type: ignore[return-value]
+@router.get("/retention/by-classification", response_model=list[ClassificationRetentionResponse])
+def retention_by_classification(
+    term: Annotated[
+        str | None,
+        Query(pattern=_TERM_RE, description="Academic term, e.g. Fall2024"),
+    ] = None,
+    classification: Annotated[
+        list[str] | None,
+        Query(description="Filter by one or more classifications"),
+    ] = None,
+) -> list[ClassificationRetentionResponse]:
+    return svc.by_classification(term=term, classifications=classification)
