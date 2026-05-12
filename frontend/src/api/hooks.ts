@@ -4,6 +4,7 @@ import type {
   CollegeEnrollment,
   Filters,
   GpaBucket,
+  StudentRecord,
 } from './types'
 
 function buildQs(filters: Filters): string {
@@ -48,5 +49,13 @@ export function useGpaDistribution(filters: Filters): UseQueryResult<GpaBucket[]
   return useQuery({
     queryKey: ['gpa', 'distribution', filters],
     queryFn: () => apiFetch<GpaBucket[]>(`/api/gpa/distribution${buildQs(filters)}`),
+  })
+}
+
+export function useStudents(limit = 500): UseQueryResult<StudentRecord[]> {
+  return useQuery({
+    queryKey: ['students', limit],
+    queryFn: () => apiFetch<StudentRecord[]>(`/api/students?limit=${limit}`),
+    staleTime: 5 * 60 * 1000,
   })
 }

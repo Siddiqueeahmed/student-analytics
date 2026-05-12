@@ -1,0 +1,26 @@
+.page {
+  padding: 1.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.heading {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.meta {
+  font-size: 0.875rem;
+  color: var(--color-muted);
+}
+
+.error {
+  padding: 1rem;
+  background: #450a0a;
+  border: 1px solid #7f1d1d;
+  border-radius: 0.5rem;
+  color: #fca5a5;
+  font-size: 0.875rem;
+}

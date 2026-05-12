@@ -1,6 +1,6 @@
 import styles from './Chart.module.css'
 
-export default function Skeleton(): React.ReactElement {
+export function Skeleton(): React.ReactElement {
   return (
     <div className={styles.card}>
       <div className={styles.skeletonTitle} />
@@ -9,3 +9,5 @@ export default function Skeleton(): React.ReactElement {
     </div>
   )
 }
+
+export default Skeleton
