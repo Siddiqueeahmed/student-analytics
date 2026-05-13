@@ -128,4 +128,6 @@ def generate(output_path: Path) -> None:
 
 
 if __name__ == "__main__":
-    generate(Path(__file__).parent / "students.csv")
+    import sys
+    out = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).parent / "students.csv"
+    generate(out)

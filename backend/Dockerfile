@@ -2,19 +2,26 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install dependencies first (layer-cached until pyproject.toml changes)
-COPY backend/pyproject.toml .
+# Install dependencies from pyproject.toml
+COPY backend/pyproject.toml ./pyproject.toml
 RUN pip install --no-cache-dir hatchling && \
-    pip install --no-cache-dir polars fastapi "uvicorn[standard]" python-dotenv
+    pip install --no-cache-dir \
+        fastapi "uvicorn[standard]" polars python-dotenv duckdb \
+        pydantic-settings cachetools structlog \
+        "python-jose[cryptography]" "passlib[bcrypt]" python-multipart \
+        slowapi prometheus-client \
+        opentelemetry-sdk opentelemetry-instrumentation-fastapi \
+        opentelemetry-exporter-otlp-proto-grpc
 
-# Generate synthetic data into the image so the container is self-contained
+# Generate synthetic data and run ETL so the DB exists at startup
 COPY data/generate_synthetic.py ./data/generate_synthetic.py
-RUN python data/generate_synthetic.py
-
-# Copy application source
 COPY backend/app ./app
 
-ENV DATA_PATH=/app/data/students.csv
+ENV DATA_PATH=/app/data/students.csv \
+    DB_PATH=/app/data/analytics.duckdb
+
+RUN python data/generate_synthetic.py "$DATA_PATH" && \
+    python -m app.etl.run
 
 EXPOSE 8000
 

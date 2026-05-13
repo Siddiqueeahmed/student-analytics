@@ -1,4 +1,5 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react'
+import styles from './ErrorBoundary.module.css'
 
 interface Props {
   children: ReactNode
@@ -25,7 +26,7 @@ export class ErrorBoundary extends Component<Props, State> {
     if (this.state.hasError) {
       return (
         this.props.fallback ?? (
-          <div style={{ color: '#f87171', padding: 24 }}>
+          <div className={styles.error} role="alert">
             Chart error: {this.state.message}
           </div>
         )

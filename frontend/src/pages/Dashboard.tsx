@@ -12,11 +12,6 @@ export default function Dashboard(): React.ReactElement {
 
   return (
     <div className={styles.shell}>
-      <header className={styles.header}>
-        <span className={styles.logo}>Student Analytics</span>
-        <span className={styles.tag}>Phase 2</span>
-      </header>
-
       <FilterBar filters={filters} onChange={setFilters} />
 
       <main className={styles.main}>

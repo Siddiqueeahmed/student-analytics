@@ -7,6 +7,10 @@ services:
       - "8000:8000"
     environment:
       - DATA_PATH=/app/data/students.csv
+      - DB_PATH=/app/data/analytics.duckdb
+      # Override in production: generate with `python -c "import secrets; print(secrets.token_hex(32))"`
+      - SECRET_KEY=${SECRET_KEY:-change-me-set-SECRET_KEY-env-var}
+      - ACCESS_TOKEN_EXPIRE_MINUTES=60
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')"]
       interval: 10s
