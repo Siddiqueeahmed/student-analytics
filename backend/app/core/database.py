@@ -14,9 +14,10 @@ _lock: threading.Lock = threading.Lock()
 def init(path: str) -> None:
     """Open the database. No-op if already initialised (allows test injection)."""
     global _conn
-    if _conn is not None:
-        return
-    _conn = duckdb.connect(path)
+    with _lock:
+        if _conn is not None:
+            return
+        _conn = duckdb.connect(path)
 
 
 def close() -> None:

@@ -1,7 +1,7 @@
+import { useAvailableTerms } from '../api/hooks'
 import type { Filters } from '../api/types'
 import styles from './FilterBar.module.css'
 
-const TERMS = ['Fall2023', 'Spring2024', 'Fall2024', 'Spring2025']
 const CLASSIFICATIONS = ['Freshman', 'Sophomore', 'Junior', 'Senior']
 
 interface Props {
@@ -9,7 +9,9 @@ interface Props {
   onChange: (f: Filters) => void
 }
 
-export default function FilterBar({ filters, onChange }: Props): React.ReactElement {
+export default function FilterBar({ filters, onChange }: Props) {
+  const { data: terms } = useAvailableTerms()
+
   const toggleClassification = (cls: string): void => {
     const current = filters.classifications ?? []
     const next = current.includes(cls)
@@ -31,7 +33,7 @@ export default function FilterBar({ filters, onChange }: Props): React.ReactElem
           }
         >
           <option value="">All terms</option>
-          {TERMS.map((t) => (
+          {(terms ?? []).map((t: string) => (
             <option key={t} value={t}>{t}</option>
           ))}
         </select>

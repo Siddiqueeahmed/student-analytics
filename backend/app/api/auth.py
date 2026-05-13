@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import asyncio
 
+import passlib.hash  # type: ignore[import-untyped]
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 
@@ -25,8 +26,6 @@ def _lookup_user(email: str) -> tuple[str, str, str] | None:
 
 @router.post("/auth/token", response_model=TokenResponse)
 async def login(form: OAuth2PasswordRequestForm = Depends()) -> TokenResponse:
-    import passlib.hash  # type: ignore[import-untyped]
-
     row = await asyncio.to_thread(_lookup_user, form.username)
     if row is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")

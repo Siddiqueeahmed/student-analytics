@@ -35,7 +35,10 @@ class GpaRepository:
             rows = conn.execute(query, params).fetchall()
 
         return [
-            {"bucket": f"{float(row[0]):.1f}-{float(row[0]) + 0.5:.1f}", "count": row[1]}
+            {
+                "bucket": f"{float(row[0]):.1f}-{min(float(row[0]) + 0.5, 4.0):.1f}",
+                "count": row[1],
+            }
             for row in rows
         ]
 

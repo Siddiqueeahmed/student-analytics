@@ -59,3 +59,11 @@ export function useStudents(limit = 500): UseQueryResult<StudentRecord[]> {
     staleTime: 5 * 60 * 1000,
   })
 }
+
+export function useAvailableTerms(): UseQueryResult<string[]> {
+  return useQuery({
+    queryKey: ['meta', 'terms'],
+    queryFn: () => apiFetch<string[]>('/api/meta/terms'),
+    staleTime: 10 * 60 * 1000,
+  })
+}
