@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import asyncio
 import threading
+from typing import Union
 
 from cachetools import TTLCache
 
@@ -10,9 +11,13 @@ from app.models.retention import ClassificationRetentionResponse
 from app.repositories.retention import RetentionRepository
 
 _repo = RetentionRepository()
-_cache: TTLCache[tuple[str | None, str], list[ClassificationRetentionResponse]] = TTLCache(
-    maxsize=128, ttl=300
-)
+_cache: TTLCache[
+    tuple[str | None, str],
+    Union[
+        list[ClassificationRetentionResponse],
+        "asyncio.Future[list[ClassificationRetentionResponse]]",
+    ],
+] = TTLCache(maxsize=128, ttl=300)
 _cache_lock = threading.Lock()
 
 
@@ -23,18 +28,32 @@ async def by_classification(
     key = (term, ",".join(sorted(classifications or [])))
 
     with _cache_lock:
-        cached = _cache.get(key)
-    if cached is not None:
-        return cached
+        entry = _cache.get(key)
+        if entry is None:
+            loop = asyncio.get_event_loop()
+            future: asyncio.Future[list[ClassificationRetentionResponse]] = loop.create_future()
+            _cache[key] = future
+            entry = None
 
-    rows = await asyncio.to_thread(
-        _repo.by_classification, term=term, classifications=classifications
-    )
-    result = [ClassificationRetentionResponse.model_validate(r) for r in rows]
+    if entry is None:
+        try:
+            rows = await asyncio.to_thread(
+                _repo.by_classification, term=term, classifications=classifications
+            )
+            result = [ClassificationRetentionResponse.model_validate(r) for r in rows]
+            with _cache_lock:
+                _cache[key] = result
+            future.set_result(result)
+            return result
+        except Exception as exc:
+            with _cache_lock:
+                _cache.pop(key, None)
+            future.set_exception(exc)
+            raise
 
-    with _cache_lock:
-        _cache[key] = result
-    return result
+    if isinstance(entry, asyncio.Future):
+        return await entry
+    return entry
 
 
 def invalidate_cache() -> None:

@@ -15,10 +15,12 @@ SELECT
     college                              AS college_name
 FROM (SELECT DISTINCT college FROM int_student_term);
 
+-- dim_program stores college_name directly to avoid correlated subqueries in fact JOIN
 CREATE OR REPLACE TABLE dim_program AS
 SELECT
-    row_number() OVER (ORDER BY p.program) AS program_key,
-    p.program                              AS program_name,
+    row_number() OVER (ORDER BY p.college, p.program) AS program_key,
+    p.program                                          AS program_name,
+    p.college                                          AS college_name,
     dc.college_key
 FROM (SELECT DISTINCT program, college FROM int_student_term) p
 JOIN dim_college dc ON p.college = dc.college_name;
@@ -45,5 +47,5 @@ SELECT
 FROM int_student_term i
 JOIN dim_student  ds ON i.student_id = ds.student_id
 JOIN dim_term     dt ON i.term       = dt.term_name
-JOIN dim_program  dp ON i.program    = dp.program_name AND i.college = (SELECT college_name FROM dim_college WHERE college_key = dp.college_key)
+JOIN dim_program  dp ON i.program    = dp.program_name AND i.college = dp.college_name
 JOIN dim_college  dc ON i.college    = dc.college_name;
