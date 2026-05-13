@@ -1,14 +1,14 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import type { ComponentProps } from 'react'
+import type { CollegeEnrollment } from '../api/types'
 import EnrollmentChart from '../components/EnrollmentChart'
 
-function makeClient(data: unknown, key: unknown[]) {
-  const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } })
-  qc.setQueryData(key, data)
-  return qc
+type StoryArgs = ComponentProps<typeof EnrollmentChart> & {
+  _mockData?: CollegeEnrollment[]
 }
 
-const MOCK_DATA = [
+const MOCK_DATA: CollegeEnrollment[] = [
   { college: 'Engineering', count: 1240 },
   { college: 'Arts & Sciences', count: 980 },
   { college: 'Business', count: 760 },
@@ -16,7 +16,13 @@ const MOCK_DATA = [
   { college: 'Health Sciences', count: 430 },
 ]
 
-const meta: Meta<typeof EnrollmentChart> = {
+function makeClient(data: CollegeEnrollment[], key: unknown[]) {
+  const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } })
+  qc.setQueryData(key, data)
+  return qc
+}
+
+const meta: Meta<StoryArgs> = {
   title: 'Charts/EnrollmentChart',
   component: EnrollmentChart,
   decorators: [
@@ -37,7 +43,7 @@ const meta: Meta<typeof EnrollmentChart> = {
 }
 
 export default meta
-type Story = StoryObj<typeof EnrollmentChart & { _mockData?: typeof MOCK_DATA }>
+type Story = StoryObj<StoryArgs>
 
 export const Default: Story = {}
 

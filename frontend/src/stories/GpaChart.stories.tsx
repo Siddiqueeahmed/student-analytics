@@ -1,14 +1,14 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import type { ComponentProps } from 'react'
 import GpaChart from '../components/GpaChart'
+import type { GpaBucket } from '../api/types'
 
-function makeClient(data: unknown, key: unknown[]) {
-  const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } })
-  qc.setQueryData(key, data)
-  return qc
+type StoryArgs = ComponentProps<typeof GpaChart> & {
+  _mockData?: GpaBucket[]
 }
 
-const MOCK_DATA = [
+const MOCK_DATA: GpaBucket[] = [
   { bucket: '0.0-0.5', count: 12 },
   { bucket: '0.5-1.0', count: 38 },
   { bucket: '1.0-1.5', count: 95 },
@@ -19,7 +19,13 @@ const MOCK_DATA = [
   { bucket: '3.5-4.0', count: 640 },
 ]
 
-const meta: Meta<typeof GpaChart> = {
+function makeClient(data: GpaBucket[], key: unknown[]) {
+  const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } })
+  qc.setQueryData(key, data)
+  return qc
+}
+
+const meta: Meta<StoryArgs> = {
   title: 'Charts/GpaChart',
   component: GpaChart,
   decorators: [
@@ -40,7 +46,7 @@ const meta: Meta<typeof GpaChart> = {
 }
 
 export default meta
-type Story = StoryObj<typeof GpaChart & { _mockData?: typeof MOCK_DATA }>
+type Story = StoryObj<StoryArgs>
 
 export const Default: Story = {}
 
