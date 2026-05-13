@@ -18,7 +18,7 @@ def get_current_user(token: str = Depends(_oauth2_scheme)) -> TokenPayload:
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials",
             headers={"WWW-Authenticate": "Bearer"},
-        )
+        ) from None
 
 
 def require_admin(current_user: TokenPayload = Depends(get_current_user)) -> TokenPayload:

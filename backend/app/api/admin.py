@@ -4,8 +4,6 @@ from __future__ import annotations
 import asyncio
 from pathlib import Path
 
-import duckdb
-
 from fastapi import APIRouter, Depends
 
 from app.auth.dependencies import require_admin
@@ -13,7 +11,6 @@ from app.auth.models import TokenPayload
 from app.core.config import settings
 from app.core.database import cursor
 from app.etl.extract import extract
-from app.etl.load import load
 from app.etl.quality import enforce
 from app.etl.transform import transform
 
@@ -37,8 +34,6 @@ def _refresh_in_place() -> None:
     cleaned = transform(raw)
 
     with cursor() as conn:
-        # Re-create the students table in the open connection
-        conn.execute("CREATE OR REPLACE TABLE students AS SELECT * FROM _staging")
         conn.register("_staging", cleaned)
         conn.execute("CREATE OR REPLACE TABLE students AS SELECT * FROM _staging")
         conn.unregister("_staging")
