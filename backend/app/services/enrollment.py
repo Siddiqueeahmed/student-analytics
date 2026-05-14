@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import asyncio
 import threading
-from typing import Union
 
 from cachetools import TTLCache
 
@@ -16,7 +15,7 @@ _repo = EnrollmentRepository()
 # await the same Future instead of each dispatching a separate DB query.
 _cache: TTLCache[
     tuple[str | None, str],
-    Union[list[CollegeEnrollmentResponse], "asyncio.Future[list[CollegeEnrollmentResponse]]"],
+    list[CollegeEnrollmentResponse] | asyncio.Future[list[CollegeEnrollmentResponse]],
 ] = TTLCache(maxsize=128, ttl=300)
 _cache_lock = threading.Lock()
 

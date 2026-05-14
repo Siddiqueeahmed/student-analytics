@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import asyncio
 import threading
-from typing import Union
 
 from cachetools import TTLCache
 
@@ -15,11 +14,11 @@ _student_repo = StudentRepository()
 
 _cache: TTLCache[
     tuple[str | None, str],
-    Union[list[GpaBucketResponse], "asyncio.Future[list[GpaBucketResponse]]"],
+    list[GpaBucketResponse] | asyncio.Future[list[GpaBucketResponse]],
 ] = TTLCache(maxsize=128, ttl=300)
 _students_cache: TTLCache[
     int,
-    Union[list[dict[str, object]], "asyncio.Future[list[dict[str, object]]]"],
+    list[dict[str, object]] | asyncio.Future[list[dict[str, object]]],
 ] = TTLCache(maxsize=8, ttl=300)
 _cache_lock = threading.Lock()
 

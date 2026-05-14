@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import asyncio
 import threading
-from typing import Union
 
 from cachetools import TTLCache
 
@@ -13,10 +12,7 @@ from app.repositories.retention import RetentionRepository
 _repo = RetentionRepository()
 _cache: TTLCache[
     tuple[str | None, str],
-    Union[
-        list[ClassificationRetentionResponse],
-        "asyncio.Future[list[ClassificationRetentionResponse]]",
-    ],
+    list[ClassificationRetentionResponse] | asyncio.Future[list[ClassificationRetentionResponse]],
 ] = TTLCache(maxsize=128, ttl=300)
 _cache_lock = threading.Lock()
 

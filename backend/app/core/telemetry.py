@@ -1,5 +1,4 @@
 """OpenTelemetry tracing + Prometheus metrics setup."""
-from __future__ import annotations
 
 from opentelemetry import trace
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter

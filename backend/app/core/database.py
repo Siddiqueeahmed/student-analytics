@@ -2,8 +2,8 @@
 from __future__ import annotations
 
 import threading
-from contextlib import contextmanager
 from collections.abc import Generator
+from contextlib import contextmanager
 
 import duckdb
 

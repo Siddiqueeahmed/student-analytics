@@ -1,7 +1,7 @@
 """Unit tests for enrollment service — repo is mocked."""
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, patch
+from unittest.mock import patch
 
 import pytest
 

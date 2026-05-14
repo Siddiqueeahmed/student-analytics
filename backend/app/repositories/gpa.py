@@ -71,4 +71,4 @@ class StudentRepository:
             "student_id", "term", "college", "program", "classification",
             "gpa", "credit_hours_attempted", "credit_hours_earned", "retained_next_term",
         ]
-        return [dict(zip(cols, row)) for row in rows]
+        return [dict(zip(cols, row, strict=False)) for row in rows]

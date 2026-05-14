@@ -65,7 +65,6 @@ def api_client(mem_conn: duckdb.DuckDBPyConnection) -> TestClient:
     db._conn = mem_conn  # noqa: SLF001
 
     from app.main import app as fastapi_app
-
     from app.services import enrollment, gpa, retention
 
     enrollment.invalidate_cache()
